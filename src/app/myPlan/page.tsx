@@ -309,11 +309,27 @@ function SettingsDrawer({
     await set(ref(database, `userSettings/${user.uid}/mailUpdates`), next);
   };
 
-  const copyShareLink = () => {
+  const copyShareLink = async () => {
     const shareUrl = `${window.location.origin}/${userName}/progress`;
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'DSA Roadmap Progress',
+          text: `Check out my DSA progress on the 60-day roadmap!`,
+          url: shareUrl,
+        });
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          navigator.clipboard.writeText(shareUrl);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        }
+      }
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleResetClick = () => {
@@ -1400,9 +1416,23 @@ export default function MyPlanPage() {
     setSharingEnabled(next);
     await set(ref(database, `userSettings/${user.uid}/sharingEnabled`), next);
   };
-  const copyProgressLink = () => {
+  const copyProgressLink = async () => {
     const url = `${window.location.origin}/${userName}/progress`;
-    navigator.clipboard.writeText(url);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'DSA Roadmap Progress',
+          text: `Check out my DSA progress on the 60-day roadmap!`,
+          url: url,
+        });
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          navigator.clipboard.writeText(url);
+        }
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+    }
   };
   const openSettingsAt = (tab: SettingsTab) => {
     setSettingsInitialTab(tab);

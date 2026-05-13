@@ -21,6 +21,7 @@ import {
   User,
   ArrowRight,
   Lock,
+  Share2,
 } from 'lucide-react';
 import { ref, get } from 'firebase/database';
 import { database } from '@/lib/firebase';
@@ -66,6 +67,24 @@ export default function ProgressPage({ params }: { params: Promise<{ userName: s
   const router = useRouter();
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [animating, setAnimating] = useState(false);
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `DSA Progress - @${decodeURIComponent(userName)}`,
+          text: `Check out @${decodeURIComponent(userName)}'s progress on the 60-day DSA Roadmap!`,
+          url: url,
+        });
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          navigator.clipboard.writeText(url);
+        }
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+    }
+  };
 
   // Load profile data from Firebase by username
   const [sharingEnabled, setSharingEnabled] = useState<boolean | null>(null); // null = loading
@@ -307,6 +326,11 @@ export default function ProgressPage({ params }: { params: Promise<{ userName: s
             <Button variant="ghost" size="icon" onClick={cycleTheme} className="h-8 w-8">
               {theme === 'dark' ? <Moon className="h-3.5 w-3.5" /> : theme === 'light' ? <Sun className="h-3.5 w-3.5" /> : <Monitor className="h-3.5 w-3.5" />}
             </Button>
+            {sharingEnabled && (
+              <Button variant="ghost" size="icon" onClick={handleShare} className="h-8 w-8 text-primary">
+                <Share2 className="h-3.5 w-3.5" />
+              </Button>
+            )}
             {!user && (
               <Button onClick={handlePrimaryAction} size="sm" className="h-8 text-[11px] gap-2 rounded-lg">
                 Join Plan
