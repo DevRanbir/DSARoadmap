@@ -1,158 +1,130 @@
 <!-- PROJECT IMAGE / BANNER -->
 <p align="center">
-  <img width="100%" alt="Labless Welcome Screen" src="Images/WelcomeScreen.png" />
+  <img width="200" alt="DSA Study Plan Logo" src="public/logo.svg" />
 </p>
 
-<p align="center">
-  <br>
-  <a href="https://github.com/DevRanbir/Labless/releases/tag/v2-beta">
-    <img width="80%" src="https://img.shields.io/badge/Download_v2--beta-2ea44f?style=for-the-badge&logo=github&logoColor=white&labelColor=00C7B7" alt="Download v2-beta">
-  </a>
-  <br>
-</p>
+# 🚀 DSARoadmap
 
-
-# 🚀 Labless
-
-> AI-powered intelligent email labeling and organization platform designed to automate your inbox workflow and eliminate manual sorting.
+> A premium, AI-enhanced 60-day DSA study plan and progress tracker designed to make you interview-ready with zero friction.
 
 ---
 
 ## 📖 Description
 
-Labless is an innovative productivity application that uses Large Language Models (LLMs) to automatically categorize and label your emails. By analyzing your inbox in real-time, it identifies transactions, bills, personal messages, and more, allowing you to focus on what matters while the AI handles the organization.
+DSARoadmap is a comprehensive platform built to streamline your technical interview preparation. It provides a structured 60-day curriculum covering everything from basic arrays to advanced dynamic programming and graph algorithms, with curated problems from **LeetCode**, **GeeksforGeeks**, and **Codeforces**.
 
 What makes it unique:
-- **Intelligent Categorization** – Uses LLMs (Groq/Llama) to understand context, not just keywords.
-- **Cross-Platform Support** – Available as a sleek JavaFX GUI or a robust Python CLI.
-- **Privacy-First** – Processes data locally where possible; your login tokens never leave your machine.
-- **Portable Design** – Self-contained Windows release that runs without needing a pre-installed Java Runtime.
-- **Real-time Feedback** – Monitor labeling progress and AI reasoning live.
+- **Curated 60-Day Plan** – No more wondering "what to solve next".
+- **Real-time Progress Tracking** – Visualize your journey with detailed stats and activity maps.
+- **Premium WebGL UI** – Features a stunning, interactive liquid background powered by Three.js.
+- **Social Sharing** – Share your public profile with recruiters or peers, or keep it private for focused study.
+- **Modern Tech Stack** – Built with Next.js 16, TypeScript, and Tailwind CSS for a seamless experience.
 
 ---
 
 ## ✨ Features
 
-- **AI Email Labeling** – Practice zero-touch inbox management with AI-driven categorization.
-- **Transaction Detection** – Automatically identifies and tags financial transactions and receipts.
-- **Multi-Model Support** – Connect with Groq, OpenAI, or local Ollama instances.
-- **Portable Executable** – Download and run immediately with our bundled JRE releases.
-- **Smart Onboarding** – Simple OAuth2 flow to connect your Gmail safely.
-- **Detailed Progress** – Visual feedback for large-scale inbox processing jobs.
-
-<p align="center">
-  <img width="90%" alt="Labless Workspace" src="Images/MailsList.png" />
-</p>
+- **Personalized Dashboard** – Track your daily goals and overall completion percentage.
+- **Topic Breakdown** – Monitor your performance across 10+ core DSA categories.
+- **Interactive Activity Map** – View your 60-day journey at a glance.
+- **Glassmorphic Design** – State-of-the-art UI with backdrop blurs and fluid animations.
+- **Firebase Auth & DB** – Secure Google login and real-time data persistence.
+- **Public Profiles** – Showcase your dedication with a shareable progress URL.
 
 ---
 
 ## 🧠 Tech Stack
 
-**Java GUI App**
-- Java 17+ / JavaFX
-- Google Gmail API
-- Groq / LLM Integration
-- SQLite (Local Cache)
-- Maven (Build System)
-
-**Command-Based App**
-- Python 3.10+
-- Flask (Web Interface)
-- SQLAlchemy / SQLite
-- Ollama / OpenAI Integration
-- Docker Support
-
-**Deployment**
-- GitHub Releases
-- WiX Toolset (MSI Installers)
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS + Shadcn UI
+- **Backend:** Firebase (Auth, Realtime Database)
+- **Database (ORM):** Prisma
+- **Visuals:** Three.js (Liquid Ether Simulation)
+- **Icons:** Lucide React
+- **Animations:** Framer Motion
 
 ---
 
 ## 🏗️ Architecture / Workflow
 
 ```text
-Gmail API → Fetch Inbox → Transaction Detection → LLM Categorization → Apply Labels → Update Local Cache
+User Login (Firebase Auth) → Dashboard → Select Day → Solve Curated Problems → Mark Complete → Realtime DB Update → UI Progress Re-render
 ```
 
 ---
 
 ## ⚙️ Installation & Setup
 
-### Java GUI (Recommended)
+### Local Development
 ```bash
 # Clone the repository
-git clone https://github.com/DevRanbir/Labless.git
+git clone https://github.com/DevRanbir/DSARoadmap.git
 
 # Navigate to project
-cd Labless/java-gui-mail-labeler
-
-# Build and Run
-mvn clean javafx:run
-```
-
-### Command-Based App
-```bash
-# Navigate to project
-cd Labless/command-based-app
+cd DSARoadmap
 
 # Install dependencies
-pip install -r requirements.txt
+bun install # or npm install
 
-# Start Web Server
-python web_app.py
+# Set up environment variables
+cp .env.local.example .env.local
+# Fill in your Firebase credentials in .env.local
+
+# Run Development Server
+bun dev
 ```
 
 ---
 
 ## 🔐 Environment Variables / Configuration
 
-For the Java GUI, place your `credentials.json` in `src/main/resources/` and create an `app-config.yaml` in the root.
-
-For the Python app, create a `.env` file:
+Create a `.env.local` file in the root:
 ```env
-LLM_SERVICE=Ollama
-DATABASE_PATH=email_pipeline.db
-OLLAMA_BASE_URL=http://localhost:11434/v1
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=your_url
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ```
 
 ---
 
 ## 🧪 Usage
 
-* **Step 1:** Connect your Gmail account via the secure OAuth onboarding.
-* **Step 2:** Select the folders or labels you want the AI to monitor.
-* **Step 3:** Choose your preferred AI model (Groq is recommended for speed).
-* **Step 4:** Start the "Labeling Job" and watch your inbox get organized.
-* **Step 5:** Review the AI's reasoning for each label directly in the app.
-
----
-
-## 🎥 Demo
-
-* **Download Portable Release:** [Releases Page](https://github.com/DevRanbir/Labless/releases)
+* **Step 1:** Sign in with Google to create your personalized profile.
+* **Step 2:** Follow the 60-day syllabus, tackling the problems listed for each day.
+* **Step 3:** Mark topics and problems as completed to update your progress.
+* **Step 4:** Share your progress URL (`/username/progress`) with your network.
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-Labless/
-├── java-gui-mail-labeler/    # Premium JavaFX Desktop Application
-├── command-based-app/        # Python CLI and Flask Web Interface
-├── Labless-Portable/         # Bundled standalone Windows release
-├── build-release.ps1         # Automation script for building releases
-└── README.md                 # Root documentation
+DSARoadmap/
+├── src/
+│   ├── app/                # Next.js App Router (Landing, Progress, MyPlan)
+│   ├── components/ui/      # Reusable UI components (LiquidEther, etc.)
+│   ├── contexts/           # Auth and Global State
+│   ├── lib/                # Syllabus data and Firebase config
+│   └── styles/             # Global CSS and Tailwind setup
+├── public/                 # Static assets (logos, animations)
+├── prisma/                 # Database schema and migrations
+└── README.md               # Project documentation
 ```
 
 ---
 
 ## 🚧 Future Improvements
 
-- [ ] Add support for Outlook / Office 365
-- [ ] Implement local-only LLM processing for 100% privacy
-- [ ] Add advanced search with natural language queries
-- [ ] Create a mobile companion app
-- [ ] Add multi-account support
+- [ ] Add built-in code editor for solving problems.
+- [ ] Implement AI-driven problem hints.
+- [ ] Add leaderboard for social competition.
+- [ ] Create a dark/light mode toggle with persistence.
+- [ ] Add support for custom study plans.
 
 ---
 
