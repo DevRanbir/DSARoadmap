@@ -9,7 +9,7 @@ interface DayCompletedEmailProps {
 }
 
 export function DayCompletedEmail({ username, displayName, dayNumber, totalDaysCompleted, overallPct }: DayCompletedEmailProps) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dsa.itsranbir.me';
 
   const milestones: Record<number, string> = {
     7:  'You finished Week 1 — Introduction to Data Structures!',

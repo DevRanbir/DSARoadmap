@@ -7,7 +7,7 @@ interface BindInviteEmailProps {
 }
 
 export function BindInviteEmail({ toUsername, fromUsername, fromDisplayName }: BindInviteEmailProps) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dsa.itsranbir.me';
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 560, margin: '0 auto', padding: '40px 24px', color: '#111' }}>
       <div style={{ marginBottom: 32 }}>

@@ -13,7 +13,7 @@ interface WeeklyProgressEmailProps {
 export function WeeklyProgressEmail({
   username, displayName, daysCompleted, problemsSolved, totalProblems, overallPct, currentStreak = 0,
 }: WeeklyProgressEmailProps) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dsa.itsranbir.me';
 
   const motivationalMessages = [
     "Every problem you solve is a step closer to your dream job.",

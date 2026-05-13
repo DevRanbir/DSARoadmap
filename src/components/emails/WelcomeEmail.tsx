@@ -38,7 +38,7 @@ export function WelcomeEmail({ username, displayName }: WelcomeEmailProps) {
       </div>
 
       <a
-        href={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/myPlan`}
+        href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://dsa.itsranbir.me'}/myPlan`}
         style={{
           display: 'inline-block', background: '#111', color: '#fff',
           padding: '12px 28px', borderRadius: 8, fontWeight: 600,
@@ -49,7 +49,7 @@ export function WelcomeEmail({ username, displayName }: WelcomeEmailProps) {
       </a>
 
       <p style={{ fontSize: 12, color: '#aaa' }}>
-        Your progress page: <a href={`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/${username}/progress`} style={{ color: '#888' }}>/{username}/progress</a>
+        Your progress page: <a href={`${process.env.NEXT_PUBLIC_APP_URL || 'https://dsa.itsranbir.me'}/${username}/progress`} style={{ color: '#888' }}>/{username}/progress</a>
       </p>
     </div>
   );
