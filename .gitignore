@@ -52,3 +52,14 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Extra project folders
+.dist
+.kilo
+.vscode
+.zscripts
+db
+download
+examples
+mini-services
+prisma
