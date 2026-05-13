@@ -1,0 +1,35 @@
+{
+  "worktrees": {
+    "wt-1778698716730-1": {
+      "branch": "sustaining-figure",
+      "path": "d:\\Projects\\DSARoadmap\\.kilo\\worktrees\\sustaining-figure",
+      "parentBranch": "main",
+      "createdAt": "2026-05-13T18:58:36.730Z"
+    },
+    "wt-1778698812718-2": {
+      "branch": "witty-visage",
+      "path": "d:\\Projects\\DSARoadmap\\.kilo\\worktrees\\witty-visage",
+      "parentBranch": "main",
+      "createdAt": "2026-05-13T19:00:12.718Z"
+    }
+  },
+  "sessions": {
+    "ses_1dd4b754cffeES2G380I2ahh7o": {
+      "worktreeId": "wt-1778698716730-1",
+      "createdAt": "2026-05-13T18:58:37.884Z"
+    },
+    "ses_1dd49ff5affeVlmx3f5cxhzkGU": {
+      "worktreeId": "wt-1778698812718-2",
+      "createdAt": "2026-05-13T19:00:13.614Z"
+    }
+  },
+  "tabOrder": {
+    "local": [
+      "pending:1"
+    ]
+  },
+  "worktreeOrder": [
+    "wt-1778698716730-1",
+    "wt-1778698812718-2"
+  ]
+}
