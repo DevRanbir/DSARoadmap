@@ -2,9 +2,9 @@
 
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
-import { useSyncExternalStore, useState, useMemo } from 'react';
+import React, { useSyncExternalStore, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sun, Moon, Monitor, Code2, Target, Trophy, ArrowRight, BookOpen, ChevronDown } from 'lucide-react';
+import { Sun, Moon, Monitor, Code2, Target, Trophy, ArrowRight, BookOpen, ChevronDown, Mail, Users, Share2, Sparkles, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { PageLoader } from '@/components/PageLoader';
 import LiquidEther from '@/components/ui/LiquidEther';
@@ -38,12 +38,88 @@ function isTheory(item: DayItem): item is TheoryNode {
   return item.type === 'theory';
 }
 
+const SyllabusTree = React.memo(({ sectionSubtopics }: { sectionSubtopics: Record<string, { day: number; title: string }[]> }) => {
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set([syllabusSections[0].title]));
+
+  const toggleSection = (title: string) => {
+    setExpandedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(title)) next.delete(title);
+      else next.add(title);
+      return next;
+    });
+  };
+
+  return (
+    <div className="space-y-1">
+      {syllabusSections.map((section) => {
+        const isExpanded = expandedSections.has(section.title);
+        const subtopics = sectionSubtopics[section.title] || [];
+        const colors = sectionColorMap[section.color] || defaultColor;
+
+        return (
+          <div key={section.title} className="flex flex-col">
+            {/* Section Header */}
+            <div
+              onClick={() => toggleSection(section.title)}
+              className={`group cursor-pointer rounded-xl transition-all duration-200 
+                ${isExpanded ? 'bg-foreground/[0.04]' : 'hover:bg-foreground/[0.03]'}`}
+            >
+              <div className="flex items-center gap-3 px-4 py-3">
+                <span className={`shrink-0 transition-transform duration-300 ${isExpanded ? '' : '-rotate-90'}`}>
+                  <ChevronDown className="h-3.5 w-3.5 text-foreground/20 group-hover:text-foreground/40" />
+                </span>
+                <span className={`shrink-0 h-2.5 w-2.5 rounded-full ${colors.bg} shadow-[0_0_8px_rgba(0,0,0,0.5)] dark:shadow-[0_0_8px_rgba(0,0,0,0.8)]`} />
+                <span className={`text-[15px] leading-tight flex-1 font-bold ${isExpanded ? 'text-foreground' : 'text-foreground/60 group-hover:text-foreground'}`}>
+                  {section.title}
+                </span>
+                <div className="flex items-center gap-3 shrink-0 ml-2">
+                  <span className="text-[11px] text-foreground/20 font-mono tracking-tighter tabular-nums">{section.dayRange[0]}–{section.dayRange[1]}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sub-items branch */}
+            {isExpanded && subtopics.length > 0 && (
+              <div className="relative flex ml-[28px] mt-0.5 mb-4">
+                {/* Vertical line */}
+                <div className="relative w-[5px] shrink-0 mr-3 my-1">
+                  <div className="absolute inset-0 rounded-full bg-foreground/[0.05]" />
+                  <div className={`absolute top-0 left-0 right-0 h-1/3 rounded-full ${colors.bar} shadow-[0_0_12px_${section.color}]`} />
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-0.5">
+                  {subtopics.map((sub) => (
+                    <div
+                      key={sub.day}
+                      className="group/day flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 hover:bg-foreground/[0.03] cursor-default"
+                    >
+                      <div className={`shrink-0 flex items-center justify-center w-5 h-5 rounded-[4px] text-[10px] font-bold transition-all duration-200
+                        bg-muted/50 text-foreground/30 border border-foreground/5 group-hover/day:border-foreground/20 group-hover/day:text-foreground/80`}>
+                        {sub.day}
+                      </div>
+                      <span className="text-[13px] font-medium text-foreground/50 group-hover/day:text-foreground/90 transition-colors truncate">
+                        {sub.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+});
+
+SyllabusTree.displayName = 'SyllabusTree';
+
 export default function LandingPage() {
   const { theme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const router = useRouter();
   const [animating, setAnimating] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set([syllabusSections[0].title]));
   const { user, userProfile, loading, signInWithGoogle } = useAuth();
 
   const sectionSubtopics = useMemo(() => {
@@ -62,15 +138,6 @@ export default function LandingPage() {
     }
     return result;
   }, []);
-
-  const toggleSection = (title: string) => {
-    setExpandedSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(title)) next.delete(title);
-      else next.add(title);
-      return next;
-    });
-  };
 
   const cycleTheme = () => {
     if (theme === 'light') setTheme('dark');
@@ -133,7 +200,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <main className="relative z-10 flex-1 flex items-center justify-center px-6">
+      <main className="relative z-10 min-h-[85vh] flex items-center justify-center px-6">
         <div className="max-w-lg text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 mt-40 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-primary mb-6 backdrop-blur-sm">
             <Target className="h-3 w-3" />
@@ -219,6 +286,101 @@ export default function LandingPage() {
         </div>
       </main>
 
+      {/* Features Bento Grid */}
+      <section className="relative z-10 py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-1 h-6 bg-primary rounded-full" />
+            <h2 className="text-2xl font-bold tracking-tight">Platform Features</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* 1. Daily Wrapup (Large) */}
+            <div className="md:col-span-2 p-8 rounded-3xl bg-white dark:bg-zinc-900/50 border border-border/50 backdrop-blur-xl flex flex-col justify-between group hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary shadow-sm">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Daily Wrap-up Email</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-sm">
+                  Receive a detailed summary of your day's work every evening at 9 PM IST. Stay accountable without checking the app.
+                </p>
+              </div>
+              <div className="mt-8 flex items-center gap-2">
+                <div className="h-1.5 w-12 rounded-full bg-primary shadow-sm" />
+                <div className="h-1.5 w-6 rounded-full bg-primary/20" />
+                <div className="h-1.5 w-6 rounded-full bg-primary/20" />
+              </div>
+            </div>
+
+            {/* 2. Binding (Small) */}
+            <div className="p-8 rounded-3xl bg-white/60 dark:bg-foreground/[0.03] border border-border/40 backdrop-blur-xl hover:bg-white/80 dark:hover:bg-foreground/[0.05] transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center mb-6 text-violet-500 shadow-inner">
+                <Users className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Bind with Friends</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Study together. See your partners' progress right in your sidebar.
+              </p>
+            </div>
+
+            {/* 3. Guardian/Progress (Small) */}
+            <div className="p-8 rounded-3xl bg-white/60 dark:bg-foreground/[0.03] border border-border/40 backdrop-blur-xl hover:bg-white/80 dark:hover:bg-foreground/[0.05] transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-6 text-emerald-500 shadow-inner">
+                <Share2 className="h-5 w-5" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Public Progress</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                A dedicated shareable page for mentors or guardians to track your 60-day journey.
+              </p>
+            </div>
+
+            {/* 4. Design (Large) */}
+            <div className="md:col-span-2 p-8 rounded-3xl bg-white/60 dark:bg-foreground/[0.03] border border-border/40 backdrop-blur-xl flex flex-col md:flex-row gap-8 items-center hover:bg-white/80 dark:hover:bg-foreground/[0.05] transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
+              <div className="flex-1">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-6 text-amber-500 shadow-inner">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Sleek & Intuitive</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Focus on what matters. Our minimalist design ensures you spend your time solving problems, not fighting the UI.
+                </p>
+              </div>
+              <div className="w-full md:w-48 aspect-video rounded-2xl bg-foreground/[0.05] border border-border/20 flex items-center justify-center shadow-inner">
+                <div className="flex gap-1">
+                  <div className="w-2 h-8 rounded-full bg-foreground/20 dark:bg-primary/40 animate-pulse" />
+                  <div className="w-2 h-12 rounded-full bg-foreground/40 dark:bg-primary animate-pulse delay-75" />
+                  <div className="w-2 h-6 rounded-full bg-foreground/20 dark:bg-primary/60 animate-pulse delay-150" />
+                </div>
+              </div>
+            </div>
+
+            {/* 5. Syllabus (Full Width) */}
+            <div className="md:col-span-3 p-8 rounded-3xl bg-white/60 dark:bg-foreground/[0.03] border border-border/40 backdrop-blur-xl flex flex-col md:flex-row justify-between items-center hover:bg-white/80 dark:hover:bg-foreground/[0.05] transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1">
+              <div className="mb-6 md:mb-0">
+                <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center mb-6 text-sky-500 shadow-inner">
+                  <Calendar className="h-5 w-5" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Curated 60-Day Syllabus</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-md">
+                  No more decision fatigue. We've mapped out exactly what to study and which problems to solve for the next two months.
+                </p>
+              </div>
+              <div className="flex -space-x-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-12 h-12 rounded-full bg-white dark:bg-background border-2 border-border flex items-center justify-center text-[10px] font-bold shadow-lg text-foreground/40">
+                    Day
+                  </div>
+                ))}
+                <div className="w-12 h-12 rounded-full bg-black dark:bg-primary text-white dark:text-primary-foreground flex items-center justify-center text-xs font-bold shadow-xl border-2 border-white/20">
+                  60
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Syllabus Section */}
       <section id="syllabus" className="relative z-10 py-24">
         <div className="max-w-2xl mx-auto px-6">
@@ -228,64 +390,83 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="space-y-1">
-            {syllabusSections.map((section) => {
-              const isExpanded = expandedSections.has(section.title);
-              const subtopics = sectionSubtopics[section.title] || [];
-              const colors = sectionColorMap[section.color] || defaultColor;
+          <SyllabusTree sectionSubtopics={sectionSubtopics} />
+        </div>
+      </section>
 
-              return (
-                <div key={section.title} className="flex flex-col">
-                  {/* Section Header */}
-                  <div
-                    onClick={() => toggleSection(section.title)}
-                    className={`group cursor-pointer rounded-xl transition-all duration-200 
-                      ${isExpanded ? 'bg-white/[0.04]' : 'hover:bg-white/[0.03]'}`}
-                  >
-                    <div className="flex items-center gap-3 px-4 py-3">
-                      <span className={`shrink-0 transition-transform duration-300 ${isExpanded ? '' : '-rotate-90'}`}>
-                        <ChevronDown className="h-3.5 w-3.5 text-white/20 group-hover:text-white/40" />
-                      </span>
-                      <span className={`shrink-0 h-2.5 w-2.5 rounded-full ${colors.bg} shadow-[0_0_8px_rgba(0,0,0,0.8)]`} />
-                      <span className={`text-[15px] leading-tight flex-1 font-bold ${isExpanded ? 'text-white' : 'text-white/60 group-hover:text-white'}`}>
-                        {section.title}
-                      </span>
-                      <div className="flex items-center gap-3 shrink-0 ml-2">
-                        <span className="text-[11px] text-white/20 font-mono tracking-tighter tabular-nums">{section.dayRange[0]}–{section.dayRange[1]}</span>
-                      </div>
-                    </div>
-                  </div>
+      {/* Platform Showcase Gallery */}
+      <section className="relative z-10 py-24 px-6 overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col items-left text-left mb-16">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-1 h-6 bg-primary rounded-full" />
+              <h2 className="text-2xl font-bold tracking-tight">Platform Showcase</h2>
+            </div>
+            <p className="text-muted-foreground max-w-lg">
+              A glimpse into your future study companion. Minimalist, focused, and powerful.
+            </p>
+          </div>
 
-                  {/* Sub-items branch */}
-                  {isExpanded && subtopics.length > 0 && (
-                    <div className="relative flex ml-[28px] mt-0.5 mb-4">
-                      {/* Vertical line */}
-                      <div className="relative w-[5px] shrink-0 mr-3 my-1">
-                        <div className="absolute inset-0 rounded-full bg-white/[0.05]" />
-                        <div className={`absolute top-0 left-0 right-0 h-1/3 rounded-full ${colors.bar} shadow-[0_0_12px_${section.color}]`} />
-                      </div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            {/* My Plan Page - The Main Focus */}
+            <div className="md:col-span-8 group relative rounded-3xl border border-border/50 overflow-hidden bg-white/50 dark:bg-zinc-900/50 shadow-sm hover:shadow-2xl transition-all duration-500">
+              <div className="aspect-[16/10] overflow-hidden">
+                <img 
+                  src="/myPlanPage.png" 
+                  alt="My Plan Dashboard" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
+                <p className="font-bold text-lg">Main Dashboard</p>
+                <p className="text-sm text-muted-foreground">Manage your 60-day roadmap with ease.</p>
+              </div>
+            </div>
 
-                      <div className="flex-1 min-w-0 space-y-0.5">
-                        {subtopics.map((sub) => (
-                          <div
-                            key={sub.day}
-                            className="group/day flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 hover:bg-white/[0.03] cursor-default"
-                          >
-                            <div className={`shrink-0 flex items-center justify-center w-5 h-5 rounded-[4px] text-[10px] font-bold transition-all duration-200
-                              bg-[#1a1a1a] text-white/30 border border-white/5 group-hover/day:border-white/20 group-hover/day:text-white/80`}>
-                              {sub.day}
-                            </div>
-                            <span className="text-[13px] font-medium text-white/50 group-hover/day:text-white/90 transition-colors truncate">
-                              {sub.title}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {/* Binding Friends */}
+            <div className="md:col-span-4 group relative rounded-3xl border border-border/50 overflow-hidden bg-white/50 dark:bg-zinc-900/50 shadow-sm hover:shadow-2xl transition-all duration-500">
+              <div className="aspect-square md:aspect-auto md:h-full overflow-hidden">
+                <img 
+                  src="/BindingFriends.png" 
+                  alt="Social Binding" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
+                <p className="font-bold">Social Binding</p>
+                <p className="text-xs text-muted-foreground">Study with friends in real-time.</p>
+              </div>
+            </div>
+
+            {/* Settings & Layout */}
+            <div className="md:col-span-4 group relative rounded-3xl border border-border/50 overflow-hidden bg-white/50 dark:bg-zinc-900/50 shadow-sm hover:shadow-2xl transition-all duration-500">
+              <div className="aspect-square md:aspect-auto md:h-full overflow-hidden">
+                <img 
+                  src="/SettingsDrawer.png" 
+                  alt="Sleek UI Components" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
+                <p className="font-bold">Customizable Themes</p>
+                <p className="text-xs text-muted-foreground">Dark mode and sleek animations.</p>
+              </div>
+            </div>
+
+            {/* Public Progress */}
+            <div className="md:col-span-8 group relative rounded-3xl border border-border/50 overflow-hidden bg-white/50 dark:bg-zinc-900/50 shadow-sm hover:shadow-2xl transition-all duration-500">
+              <div className="aspect-[16/10] overflow-hidden">
+                <img 
+                  src="/PublicProgressPage.png" 
+                  alt="Public Progress" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
+                <p className="font-bold">Public Progress Page</p>
+                <p className="text-sm text-muted-foreground">Let mentors track your daily consistency.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
