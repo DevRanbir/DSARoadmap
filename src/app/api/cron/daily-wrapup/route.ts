@@ -11,7 +11,8 @@ const FROM = 'DSA Study Plan <noreply@itsranbir.me>';
 
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
-const TARGET_IST_HOUR = 21;
+const WRAPUP_WINDOW_START_MINUTE_OF_DAY = 20 * 60 + 45; // 8:45 PM IST
+const WRAPUP_WINDOW_END_MINUTE_OF_DAY = 23 * 60 + 59; // 11:59 PM IST
 
 const MISSED_DAY_QUOTES = [
   'You did not lose today, you only delayed your win. Restart tomorrow stronger.',
@@ -119,12 +120,14 @@ function toIstDateWindow(now: Date) {
   const month = istDate.getUTCMonth();
   const day = istDate.getUTCDate();
   const hour = istDate.getUTCHours();
+  const minute = istDate.getUTCMinutes();
+  const minuteOfDay = hour * 60 + minute;
 
   const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   const startOfIstDayUtcMs = Date.UTC(year, month, day) - IST_OFFSET_MS;
   const endOfIstDayUtcMs = startOfIstDayUtcMs + DAY_MS - 1;
 
-  return { dateKey, hour, startOfIstDayUtcMs, endOfIstDayUtcMs };
+  return { dateKey, hour, minute, minuteOfDay, startOfIstDayUtcMs, endOfIstDayUtcMs };
 }
 
 function pickMissedDayQuote(uid: string, dateKey: string) {
@@ -139,7 +142,7 @@ function pickMissedDayQuote(uid: string, dateKey: string) {
 
 function getAcceptedBindsCount(bindsByUser: GenericMap | null | undefined, uid: string) {
   const userBinds = (bindsByUser?.[uid] ?? {}) as GenericMap;
-  return Object.values(userBinds).reduce((count, bind) => {
+  return Object.values(userBinds).reduce((count: number, bind) => {
     const status = typeof bind === 'object' && bind ? (bind as { status?: string }).status : undefined;
     return status === 'accepted' ? count + 1 : count;
   }, 0);
@@ -225,13 +228,18 @@ async function handleDailyWrapup(req: NextRequest) {
 
   const forceRun = req.nextUrl.searchParams.get('force') === '1';
   const now = new Date();
-  const { dateKey, hour, startOfIstDayUtcMs, endOfIstDayUtcMs } = toIstDateWindow(now);
+  const { dateKey, hour, minute, minuteOfDay, startOfIstDayUtcMs, endOfIstDayUtcMs } = toIstDateWindow(now);
+  const inWrapupWindow = minuteOfDay >= WRAPUP_WINDOW_START_MINUTE_OF_DAY && minuteOfDay <= WRAPUP_WINDOW_END_MINUTE_OF_DAY;
 
-  if (!forceRun && hour !== TARGET_IST_HOUR) {
+  if (!forceRun && !inWrapupWindow) {
     return NextResponse.json({
       skipped: true,
-      reason: `Runs only at ${TARGET_IST_HOUR}:00 IST`,
+      reason: 'Outside daily wrap-up run window',
       nowIstHour: hour,
+      nowIstMinute: minute,
+      nowIstTime: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+      runWindowIst: '20:45-23:59',
+      tip: 'Use ?force=1 for manual tests',
       dateKey,
     });
   }

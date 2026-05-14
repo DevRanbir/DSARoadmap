@@ -100,6 +100,7 @@ FIREBASE_DATABASE_SECRET=your_firebase_database_secret
 ```
 
 Daily wrap-up cron endpoint: `POST /api/cron/daily-wrapup` with `Authorization: Bearer <CRON_SECRET>`.
+Manual test endpoint: `POST /api/cron/daily-wrapup?force=1` with the same auth header.
 GitHub Actions scheduler (`.github/workflows/daily-wrapup-mail.yml`) expects repo secrets: `APP_BASE_URL` and `CRON_SECRET`.
 
 ---
