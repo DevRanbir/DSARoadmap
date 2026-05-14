@@ -1,0 +1,16 @@
+name: Daily DSA Wrap-up
+on:
+  schedule:
+    # 15:30 UTC is 21:00 (9PM) IST
+    - cron: '30 15 * * *'
+  workflow_dispatch: # Allows you to run it manually from the Actions tab
+
+jobs:
+  send-wrapup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Daily Wrap-up API
+        run: |
+          curl -X POST "${{ secrets.PRODUCTION_URL }}/api/cron/daily-wrapup" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          -H "Content-Type: application/json"
