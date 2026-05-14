@@ -11,6 +11,6 @@ jobs:
     steps:
       - name: Trigger Daily Wrap-up API
         run: |
-          curl -X POST "${{ secrets.PRODUCTION_URL }}/api/cron/daily-wrapup" \
+          curl -X POST "${{ secrets.PRODUCTION_URL }}/api/cron/daily-wrapup?force=1" \
           -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
           -H "Content-Type: application/json"
