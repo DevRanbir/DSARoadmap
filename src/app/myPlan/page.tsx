@@ -60,7 +60,6 @@ import { useFirebaseBinds, useFirebaseNotifications } from '@/hooks/use-firebase
 import { ref, set, get } from 'firebase/database';
 import { database } from '@/lib/firebase';
 import { usePartnerData } from '@/hooks/use-partner-data';
-import { sendDayCompletedEmail } from '@/lib/email';
 import { PageLoader } from '@/components/PageLoader';
 
 const emptySubscribe = () => () => {};
@@ -522,7 +521,7 @@ function SettingsDrawer({
                     <label htmlFor="sett-mail" className="text-xs leading-snug cursor-pointer">
                       <span className="font-medium">Email me progress updates</span>
                       <br />
-                      <span className="text-muted-foreground text-[10px]">Weekly summaries & milestone notifications</span>
+                      <span className="text-muted-foreground text-[10px]">Daily 9PM IST wrap-up only</span>
                     </label>
                   </div>
                 </div>
@@ -1515,36 +1514,13 @@ export default function MyPlanPage() {
       const isComplete = comp && comp.done === comp.total && comp.total > 0;
       const wasComplete = prevDayCompleteRef.current[d.day] || false;
       if (isComplete && !wasComplete) {
-        // Send day completed email — only once per day, ever
-        // Fire confetti only after email is sent (or if user has no email configured)
         if (user) {
-          const emailSentRef = ref(database, `emailsSent/${user.uid}/day_${d.day}`);
-          get(emailSentRef).then((sentSnap) => {
-            if (sentSnap.exists()) {
-              // Email already sent before — still fire confetti (day was already celebrated)
+          const dayCompletionRef = ref(database, `dayCompletions/${user.uid}/day_${d.day}`);
+          get(dayCompletionRef)
+            .then((snap) => (snap.exists() ? undefined : set(dayCompletionRef, Date.now())))
+            .finally(() => {
               fireConfetti();
-              return;
-            }
-            get(ref(database, `userSettings/${user.uid}`)).then((snap) => {
-              if (!snap.exists() || snap.val().mailUpdates === false || !snap.val().emails?.length) {
-                // No email configured — fire confetti immediately
-                fireConfetti();
-                return;
-              }
-              const settings = snap.val();
-              sendDayCompletedEmail(
-                settings.emails,
-                userName,
-                user.displayName || undefined,
-                d.day,
-                daysCompleted,
-                overallPct,
-              ).then(() => {
-                set(emailSentRef, Date.now());
-                fireConfetti(); // fire only after email sent successfully
-              });
             });
-          });
         } else {
           fireConfetti();
         }
@@ -1603,6 +1579,15 @@ export default function MyPlanPage() {
             <div className="h-1.5 bg-muted rounded-full overflow-hidden">
               <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${overallPct}%` }} />
             </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-full mt-3 h-7 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-primary gap-1.5"
+              onClick={() => router.push('/#syllabus')}
+            >
+              <BookOpen className="h-3 w-3" />
+              Full Curriculum
+            </Button>
           </div>
         </div>
 

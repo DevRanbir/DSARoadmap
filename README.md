@@ -32,6 +32,7 @@ What makes it unique:
 - **Glassmorphic Design** – State-of-the-art UI with backdrop blurs and fluid animations.
 - **Firebase Auth & DB** – Secure Google login and real-time data persistence.
 - **Public Profiles** – Showcase your dedication with a shareable progress URL.
+- **9PM IST Daily Wrap-up Emails** – One consolidated end-of-day summary with progress, binds, and day-wise coverage.
 
 ---
 
@@ -90,7 +91,16 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_APP_URL=https://dsa.itsranbir.me
+
+RESEND_API_KEY=your_resend_api_key
+CRON_SECRET=your_secure_random_secret
+FIREBASE_DATABASE_URL=https://<your-project>.firebaseio.com
+FIREBASE_DATABASE_SECRET=your_firebase_database_secret
 ```
+
+Daily wrap-up cron endpoint: `POST /api/cron/daily-wrapup` with `Authorization: Bearer <CRON_SECRET>`.
+GitHub Actions scheduler (`.github/workflows/daily-wrapup-mail.yml`) expects repo secrets: `APP_BASE_URL` and `CRON_SECRET`.
 
 ---
 

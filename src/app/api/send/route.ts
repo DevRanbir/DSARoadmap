@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { WelcomeEmail } from '@/components/emails/WelcomeEmail';
 import { BindInviteEmail } from '@/components/emails/BindInviteEmail';
 import { BindAcceptedEmail } from '@/components/emails/BindAcceptedEmail';
-import { DayCompletedEmail } from '@/components/emails/DayCompletedEmail';
-import { WeeklyProgressEmail } from '@/components/emails/WeeklyProgressEmail';
+import { DailyWrapupEmail } from '@/components/emails/DailyWrapupEmail';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = 'DSA Study Plan <noreply@itsranbir.me>';
@@ -45,27 +44,25 @@ export async function POST(req: NextRequest) {
         });
         break;
 
-      case 'day_completed':
-        subject = `Day ${payload.dayNumber} complete! ✅ Keep going`;
-        react = DayCompletedEmail({
-          username: payload.username,
+      case 'daily_wrapup':
+        subject = payload.didSomethingToday ? 'Your 9PM DSA wrap-up 🌙' : 'You missed today — your DSA wrap-up 🌙';
+        react = DailyWrapupEmail({
+          username: payload.username || 'user',
           displayName: payload.displayName,
-          dayNumber: payload.dayNumber,
-          totalDaysCompleted: payload.totalDaysCompleted,
-          overallPct: payload.overallPct,
-        });
-        break;
-
-      case 'weekly_progress':
-        subject = `Your DSA progress this week 📊`;
-        react = WeeklyProgressEmail({
-          username: payload.username,
-          displayName: payload.displayName,
-          daysCompleted: payload.daysCompleted,
-          problemsSolved: payload.problemsSolved,
-          totalProblems: payload.totalProblems,
-          overallPct: payload.overallPct,
-          currentStreak: payload.currentStreak,
+          dateLabel: payload.dateLabel || '',
+          daysCompleted: Number(payload.daysCompleted) || 0,
+          problemsSolved: Number(payload.problemsSolved) || 0,
+          totalProblems: Number(payload.totalProblems) || 0,
+          overallPct: Number(payload.overallPct) || 0,
+          bindedFriendsCount: Number(payload.bindedFriendsCount) || 0,
+          currentDayNumber: Number(payload.currentDayNumber) || 1,
+          currentDayCoverageDone: Number(payload.currentDayCoverageDone) || 0,
+          currentDayCoverageTotal: Number(payload.currentDayCoverageTotal) || 0,
+          completedDayNumbersToday: Array.isArray(payload.completedDayNumbersToday)
+            ? payload.completedDayNumbersToday.map((day: unknown) => Number(day)).filter((day: number) => Number.isFinite(day))
+            : [],
+          didSomethingToday: Boolean(payload.didSomethingToday),
+          missedDayQuote: payload.missedDayQuote,
         });
         break;
 

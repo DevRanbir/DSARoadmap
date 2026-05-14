@@ -236,7 +236,7 @@ export default function OnboardingPage() {
                   <span className="font-medium">Email me progress updates</span>
                   <br />
                   <span className="text-muted-foreground text-xs">
-                    Receive weekly summaries and milestone notifications
+                    Receive one daily wrap-up at 9PM IST
                   </span>
                 </label>
               </div>

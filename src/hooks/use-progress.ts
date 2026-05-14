@@ -99,8 +99,12 @@ export function useProgress() {
     if (user) {
       // Use Firebase
       const progressRef = ref(database, `progress/${user.uid}/${key}`);
+      const activityRef = ref(database, `activity/${user.uid}/lastActivityAt`);
       const currentValue = cacheRef.current[key] || false;
-      await set(progressRef, !currentValue);
+      await Promise.all([
+        set(progressRef, !currentValue),
+        set(activityRef, Date.now()),
+      ]);
     } else {
       // Fallback to localStorage
       const current = getLocalStorageSnapshot();

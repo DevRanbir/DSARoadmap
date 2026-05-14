@@ -41,27 +41,3 @@ export async function sendBindAcceptedEmail(
 ) {
   return sendEmail({ type: 'bind_accepted', to, toUsername, acceptedByUsername, acceptedByDisplayName });
 }
-
-export async function sendDayCompletedEmail(
-  to: string | string[],
-  username: string,
-  displayName: string | undefined,
-  dayNumber: number,
-  totalDaysCompleted: number,
-  overallPct: number,
-) {
-  return sendEmail({ type: 'day_completed', to, username, displayName, dayNumber, totalDaysCompleted, overallPct });
-}
-
-export async function sendWeeklyProgressEmail(
-  to: string | string[],
-  username: string,
-  displayName: string | undefined,
-  daysCompleted: number,
-  problemsSolved: number,
-  totalProblems: number,
-  overallPct: number,
-  currentStreak?: number,
-) {
-  return sendEmail({ type: 'weekly_progress', to, username, displayName, daysCompleted, problemsSolved, totalProblems, overallPct, currentStreak });
-}
